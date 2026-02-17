@@ -50,7 +50,6 @@ jobs:
 
       - name: Create IPA (Debug)
         run: |
-          cd ios
           mkdir -p Payload
           cp -r build/ios/iphonesimulator/Runner.app Payload/ || cp -r build/ios/iphoneos/Runner.app Payload/
           zip -r $RUNNER_TEMP/EduBoost-Debug.ipa Payload
