@@ -1,0 +1,63 @@
+name: Build iOS App
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build-ios:
+    runs-on: macos-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.27.2'
+          channel: 'stable'
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Run tests
+        run: |
+          if [ -d "test" ]; then
+            flutter test --no-pub
+          else
+            echo "No test directory found, skipping tests"
+          fi
+
+      - name: Setup Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: 'latest-stable'
+
+      - name: Build iOS App (Debug)
+        run: |
+          flutter build ios --debug --no-codesign
+
+      - name: List build output
+        run: |
+          echo "Listing build directory:"
+          find build/ios -name "*.app" -type d || true
+          ls -la build/ios/ || true
+
+      - name: Create IPA (Debug)
+        run: |
+          mkdir -p Payload
+          cp -r build/ios/iphonesimulator/Runner.app Payload/ || cp -r build/ios/iphoneos/Runner.app Payload/
+          zip -r $RUNNER_TEMP/EduBoost-Debug.ipa Payload
+          rm -rf Payload
+
+      - name: Upload IPA
+        uses: actions/upload-artifact@v4
+        with:
+          name: EduBoost-iOS-Debug
+          path: ${{ runner.temp }}/EduBoost-Debug.ipa
+          retention-days: 30
