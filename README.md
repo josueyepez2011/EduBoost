@@ -10,3 +10,4 @@ Una aplicación Flutter moderna diseñada para ayudar a estudiantes a organizar 
 - 🏆 Sistema de logros y gamificación
 - 🎨 Interfaz moderna y atractiva
 
+https://www.mediafire.com/file/hwd3hdvvevphu0i/app-release.apk/file
